@@ -13,10 +13,14 @@ export default function setupSessionRestoration(registry) {
       this.beforeModel = function() {
         const session = getOwner(this).lookup('session:main');
 
-        return session.restore().then(
-          () => originalBeforeModel.apply(this, arguments),
-          () => originalBeforeModel.apply(this, arguments)
-        );
+        if (!session.isAuthenticated) {
+          return session.restore().then(
+            () => originalBeforeModel.apply(this, arguments),
+            () => originalBeforeModel.apply(this, arguments)
+            );
+        } else {
+          originalBeforeModel.apply(this, arguments);
+        }
       };
     },
   });
